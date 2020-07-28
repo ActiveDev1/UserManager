@@ -5,13 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-node",
+            "type": "node",
             "request": "launch",
             "name": "Launch Program",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${file}"
+            "program": "${workspaceFolder}/server.js",
+            "env": {
+                "APP_PORT":"3001",
+                // "MYSQL_PASS":""
+            }
         }
     ]
 }

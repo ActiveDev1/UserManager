@@ -1,16 +1,16 @@
-const mysql = require("mysql");
-const dbConfig = require("../config/db.js");
+const mysql = require('mysql');
+const config = require('../config');
 
 const connection = mysql.createConnection({
-  host: dbConfig.HOST,
-  user: dbConfig.USER,
-  password: dbConfig.PASSWORD,
-  database: dbConfig.DB
+	host: config.db.mysql.HOST,
+	user: config.db.mysql.USER,
+	password: config.db.mysql.PASSWORD,
+	database: config.db.mysql.DB,
 });
 
 connection.connect(error => {
-  if (error) throw error;
-  console.log("Successfully connected to the database.");
+	if (error) throw error;
+	console.log('Successfully connected to the database.');
 });
 
 module.exports = connection;

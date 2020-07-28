@@ -1,6 +1,6 @@
 const User = require('../models/user')
 
-exports.create = (req, res) => {
+async function create(req, res) {
     // Validate request
     if (!req.body) {
         res.status(400).send({
@@ -16,33 +16,36 @@ exports.create = (req, res) => {
     })
 
     // Save User in the database
-    User.create(user, (err, data) => {
-        if (err)
-            res.status(500).send({
-                message:
-                    err.message ||
-                    'Some error occurred while creating the User.',
-            })
-        else res.send(data)
-    })
+    try {
+        const result = await User.create(user)
+        return res.json(result)
+    } catch (err) {
+        res.status(500).send({
+            message:
+                err.message || 'Some error occurred while creating the User.',
+        })
+    }
 }
 
 // Retrieve all User from the database.
-exports.findAll = (req, res) => {
-    User.getAll((err, data) => {
-        if (err)
-            res.status(500).send({
-                message:
-                    err.message ||
-                    'Some error occurred while retrieving users.',
-            })
-        else res.send(data)
-    })
+async function findAll(req, res) {
+    try {
+        const result = await User.getAll()
+        return res.json(result)
+    } catch (err) {
+        res.status(500).json({
+            message:
+                err.message || 'Some error occurred while retrieving users.',
+        })
+    }
 }
 
 // Find a single User with a userId
-exports.findOne = (req, res) => {
-    User.findById(req.params.userId, (err, data) => {
+async function findOne(req, res) {
+    try {
+        const result = await User.findById(req.params.userId)
+        return res.json(result)
+    } catch (err) {
         if (err) {
             if (err.kind === 'not_found') {
                 res.status(404).send({
@@ -54,20 +57,19 @@ exports.findOne = (req, res) => {
                         'Error retrieving User with id ' + req.params.userId,
                 })
             }
-        } else res.send(data)
-    })
+        }
+    }
 }
 
 // Update a User identified by the userId in the request
-exports.update = (req, res) => {
-    // Validate Request
-    if (!req.body) {
-        res.status(400).send({
-            message: 'Content can not be empty!',
-        })
-    }
-
-    User.updateById(req.params.userId, new User(req.body), (err, data) => {
+async function update(req, res) {
+    try {
+        const result = await User.updateById(
+            req.params.userId,
+            new User(req.body)
+        )
+        return res.json(result)
+    } catch (err) {
         if (err) {
             if (err.kind === 'not_found') {
                 res.status(404).send({
@@ -78,15 +80,18 @@ exports.update = (req, res) => {
                     message: 'Error updating User with id ' + req.params.userId,
                 })
             }
-        } else res.send(data)
-    })
+        }
+    }
 }
 
 // Delete a User with the specified userId in the request
-exports.delete = (req, res) => {
-    User.remove(req.params.userId, (err, data) => {
+async function deleteUser(req, res) {
+    try {
+        const result = await User.remove(req.params.userId)
+        return res.send(result)
+    } catch (err) {
         if (err) {
-            if (err.kind === 'not_found') {
+            if (err.kind === 'n ot_found') {
                 res.status(404).send({
                     message: `Not found User with id ${req.params.userId}.`,
                 })
@@ -96,19 +101,30 @@ exports.delete = (req, res) => {
                         'Could not delete User with id ' + req.params.userId,
                 })
             }
-        } else res.send({ message: `User was deleted successfully!` })
-    })
+        }
+    }
 }
 
 // Delete all User from the database.
-exports.deleteAll = (req, res) => {
-    User.removeAll((err, data) => {
+async function deleteAll(req, res) {
+    try {
+        const result = await User.removeAll()
+        return res.send(result)
+    } catch (err) {
         if (err)
             res.status(500).send({
                 message:
                     err.message ||
                     'Some error occurred while removing all users.',
             })
-        else res.send({ message: `All Users were deleted successfully!` })
-    })
+    }
+}
+
+module.exports = {
+    create,
+    findAll,
+    findOne,
+    update,
+    deleteUser,
+    deleteAll,
 }
